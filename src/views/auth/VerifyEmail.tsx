@@ -59,6 +59,9 @@ const VerifyEmail = () => {
 					duration: 9000,
 					isClosable: true,
 				});
+				setTimeout(() => {
+					navigate("/");
+				}, 10000);
 			}
 		} catch (error: any) {
 			const response = error?.response;
@@ -144,8 +147,14 @@ const VerifyEmail = () => {
 											{[1, 2, 3, 4, 5].map((item, id) => (
 												<PinInputField
 													key={id}
-													w="78px"
-													h="97px"
+													w={{
+														base: "38px",
+														md: "78px",
+													}}
+													h={{
+														base: "46px",
+														md: "97px",
+													}}
 													_focus={{
 														border: "1.5px solid #01C8FF",
 													}}
