@@ -39,14 +39,10 @@ const VerifyEmail = () => {
 			// API call integration will be here. Handle success / error response accordingly.
 			let result = await axios
 				.post("https://falconlite.com/v1/api/verify-email", data)
-				.then((response) => {
-					console.log(response.status);
-					console.log(response.data);
-					return response;
-				});
+				.then((response) => response.data);
 
 			console.log(result);
-			if (data) {
+			if (result.data.status === 200) {
 				// setFormStatus(formStatusProps.success)
 				// axios.post()
 

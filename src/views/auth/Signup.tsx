@@ -42,8 +42,10 @@ const Signup = () => {
 			let result = await axios
 				.post("https://falconlite.com/v1/api/send-email", data)
 				.then((response) => response.data);
+
 			console.log(result);
-			if (result.data) {
+
+			if (result.data.status === 200) {
 				// setFormStatus(formStatusProps.success)
 				// axios.post()
 
