@@ -36,14 +36,13 @@ const Signup = () => {
 
 	const toast = useToast;
 
-	const createNewUser = async (values: MyFormValues, resetForm: Function) => {
+	const createNewUser = async (data: MyFormValues, resetForm: Function) => {
 		try {
 			// API call integration will be here. Handle success / error response accordingly.
-			let result = await axios.post(
-				"https://falconlite.com/v1/api/send-email",
-				values,
-			);
-			return result.data;
+			let result = await axios
+				.post("https://falconlite.com/v1/api/send-email", data)
+				.then((response) => response.data);
+			console.log(result);
 			if (result.data) {
 				// setFormStatus(formStatusProps.success)
 				// axios.post()
