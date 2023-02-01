@@ -6,13 +6,11 @@ export default function SignUpValidationSchema() {
   // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     return Yup.object().shape({
-      firstName: Yup.string().required('Firstname is required'),
+      name: Yup.string().required('Name is required'),
       email: Yup.string()
         .required('Email is required')
         .email('Email is invalid'),
-      phoneNumber: Yup.string()
-  .phone("IN", true)
-  .required(),
+      phone: Yup.string().required('Enter a valid phone number'),
       password: Yup.string()
         .required('Password is required')
         .min(6, 'Password must be at least 6 characters')

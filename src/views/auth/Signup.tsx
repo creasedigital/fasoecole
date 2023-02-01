@@ -22,9 +22,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 interface MyFormValues {
-	firstName: string;
+	name: string;
 	email: string;
-	phoneNumber: string;
+	phone: string;
 	password: string;
 }
 
@@ -36,15 +36,15 @@ const Signup = () => {
 
 	const toast = useToast;
 
-	const createNewUser = async (data: MyFormValues, resetForm: Function) => {
+	const createNewUser = async (values: MyFormValues, resetForm: Function) => {
 		try {
 			// API call integration will be here. Handle success / error response accordingly.
-			let result = await axios
-				.post("https://falconlite.com/v1/api/send-email", data)
-				.then((response) => {
-					return response;
-				});
-			if (data) {
+			let result = await axios.post(
+				"https://falconlite.com/v1/api/send-email",
+				values,
+			);
+			return result.data;
+			if (result.data) {
 				// setFormStatus(formStatusProps.success)
 				// axios.post()
 
@@ -74,14 +74,14 @@ const Signup = () => {
 
 	const formik = useFormik({
 		initialValues: {
-			firstName: "",
+			name: "",
 			email: "",
-			phoneNumber: "",
+			phone: "",
 			password: "",
 		},
-		// validationSchema: SignUpValidationSchema,
+		validationSchema: SignUpValidationSchema,
 		onSubmit: function (values, actions) {
-			// console.log({ values, actions });
+			console.log({ values, actions });
 			createNewUser(values, actions.resetForm);
 			setTimeout(() => {
 				// alert(JSON.stringify(values, null, 2));
@@ -114,19 +114,18 @@ const Signup = () => {
 					<form onSubmit={formik.handleSubmit}>
 						<VStack spacing="18px">
 							<FormControl>
-								<FormLabel>First name</FormLabel>
+								<FormLabel>Full name</FormLabel>
 								<Input
-									name="firstName"
+									name="name"
 									size="lg"
 									placeholder="Jeremiah"
-									value={formik.values.firstName}
+									value={formik.values.name}
 									onChange={formik.handleChange}
 									onBlur={formik.handleBlur}
 									// onChange={formik.handleChange}
 								/>
 								<FormErrorMessage>
-									{formik.touched.firstName &&
-										formik.errors.firstName}
+									{formik.touched.name && formik.errors.name}
 								</FormErrorMessage>
 							</FormControl>
 							<FormControl>
@@ -148,18 +147,18 @@ const Signup = () => {
 							<FormControl>
 								<FormLabel>Phone Number</FormLabel>
 								<Input
-									name="phoneNumber"
+									name="phone"
 									size="lg"
 									placeholder="+2348103769079"
 									type="tel"
-									value={formik.values.phoneNumber}
+									value={formik.values.phone}
 									onChange={formik.handleChange}
 									onBlur={formik.handleBlur}
 									// pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
 								/>
 								<FormErrorMessage>
-									{formik.touched.email &&
-										formik.errors.phoneNumber}
+									{formik.touched.phone &&
+										formik.errors.phone}
 								</FormErrorMessage>
 							</FormControl>
 							<FormControl>
