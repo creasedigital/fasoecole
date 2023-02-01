@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import AuthLayout from "../../layout/AuthLayout";
 import {
+	useFormik,
 	Formik,
 	FormikHelpers,
 	FormikProps,
@@ -21,27 +22,88 @@ import {
 	Field,
 	FieldProps,
 } from "formik";
+import SignUpValidationSchema from "../../utils/validator";
 import { useState } from "react";
 import { BsEyeSlashFill, BsEyeFill } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface MyFormValues {
 	firstName: string;
+	email: string;
+	phoneNumber: string;
+	password: string;
 }
 
 const Signup = () => {
-	const initialValues: MyFormValues = { firstName: "" };
-	const validateName = (value: string) => {
-		let error;
-		if (!value) {
-			error = "Name is required";
-		} else if (value.toLowerCase() !== "naruto") {
-			error = "Jeez! You're not a fan 😱";
-		}
-		return error;
-	};
+	const navigate = useNavigate();
 
+	/* const [values, setValues] = useState({
+		firstName: "",
+		email: "",
+		phoneNumber: "",
+		password: "",
+	});
+ */
 	const [show, setShow] = useState(false);
 	const handleClick = () => setShow(!show);
+
+	/* const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		e.persist();
+		setValues((values: any) => ({
+			...values,
+			[e.target.name]: e.target.value,
+		}));
+	}; */
+	const createNewUser = async (data: MyFormValues, resetForm: Function) => {
+		try {
+			// API call integration will be here. Handle success / error response accordingly.
+			let result = await axios
+				.post("https://falconlite.com/v1/api/send-email", data)
+				.then((response) => {
+					console.log(response.status);
+					console.log(response.data);
+					return response;
+				});
+			if (data) {
+				// setFormStatus(formStatusProps.success)
+				// axios.post()
+
+				navigate("/verify-email");
+				resetForm({});
+			}
+		} catch (error: any) {
+			const response = error?.response;
+			if (
+				response?.data === "user already exist" &&
+				response?.status === 400
+			) {
+				// setFormStatus(formStatusProps.duplicate)
+			} else {
+				// setFormStatus(formStatusProps.error)
+			}
+		} finally {
+			// setDisplayFormStatus(true)
+		}
+	};
+
+	const formik = useFormik({
+		initialValues: {
+			firstName: "",
+			email: "",
+			phoneNumber: "",
+			password: "",
+		},
+		// validationSchema: SignUpValidationSchema,
+		onSubmit: function (values, actions) {
+			console.log({ values, actions });
+			createNewUser(values, actions.resetForm);
+			setTimeout(() => {
+				alert(JSON.stringify(values, null, 2));
+				actions.setSubmitting(false);
+			}, 1000);
+		},
+	});
 
 	return (
 		<AuthLayout>
@@ -63,163 +125,152 @@ const Signup = () => {
 					Register on our website with your correct email address and
 					information
 				</Text>
-
-				<Formik
-					initialValues={initialValues}
-					onSubmit={(values, actions) => {
-						console.log({ values, actions });
-						setTimeout(() => {
-							alert(JSON.stringify(values, null, 2));
-							actions.setSubmitting(false);
-						}, 1000);
-					}}
-				>
-					{(props) => (
-						<Box pr={{ base: "10px", md: "29px" }}>
-							<Form>
-								<Field name="name" validate={validateName}>
-									{({}) => (
-										<VStack spacing="18px">
-											<FormControl>
-												<FormLabel>
-													First name
-												</FormLabel>
-												<Input
-													size="lg"
-													placeholder="Jeremiah"
-												/>
-												<FormErrorMessage>
-													{}
-												</FormErrorMessage>
-											</FormControl>
-											<FormControl>
-												<FormLabel>
-													Email Address
-												</FormLabel>
-												<Input
-													size="lg"
-													type="email"
-													placeholder="Fame@gmail.com"
-												/>
-												<FormErrorMessage>
-													{}
-												</FormErrorMessage>
-											</FormControl>
-											<FormControl>
-												<FormLabel>
-													Phone Number
-												</FormLabel>
-												<Input
-													size="lg"
-													placeholder="+2348103769079"
-													type="tel"
-													name="phone"
-													pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
-												/>
-												<FormErrorMessage>
-													{}
-												</FormErrorMessage>
-											</FormControl>
-											<FormControl>
-												<FormLabel>Password</FormLabel>
-												<InputGroup size="lg">
-													<Input
-														pr="4.5rem"
-														type={
-															show
-																? "text"
-																: "password"
-														}
-														placeholder="Enter password"
-													/>
-													<InputRightElement width="4.5rem">
-														<Button
-															h="1.75rem"
-															size="xs"
-															onClick={
-																handleClick
-															}
-															borderRadius="none"
-															background="transparent"
-															_focus={{
-																border: "none",
-																background:
-																	"transparent",
-															}}
-															_hover={{
-																border: "none",
-																background:
-																	"transparent",
-															}}
-															_active={{
-																border: "none",
-																outline: "none",
-																background:
-																	"transparent",
-															}}
-														>
-															{show ? (
-																<BsEyeFill />
-															) : (
-																<BsEyeSlashFill />
-															)}
-														</Button>
-													</InputRightElement>
-												</InputGroup>
-												<FormErrorMessage>
-													{}
-												</FormErrorMessage>
-											</FormControl>
-										</VStack>
-									)}
-								</Field>
-								<Checkbox
-									defaultChecked
-									// bg={"#9191DB"}
-									colorScheme={"purple"}
-									color="#A8D8D8"
-									mt="12px"
-									mb="34px"
-								>
-									Remember me
-								</Checkbox>
-								<Button
-									bg={"#01C8FF"}
-									p={"12px"}
-									borderRadius="10px"
-									width={{ base: "100%", md: "528px" }}
-									_focus={{ border: "none", outline: "none" }}
-									_hover={{ border: "none", outline: "none" }}
-									height="50px"
-									color="#4B4A4A"
-									mx="auto"
-									mb="20px"
-									display={"block"}
-									isLoading={props.isSubmitting}
-									type="submit"
-								>
-									Sign up
-								</Button>
-								<Box
-									as="p"
-									textAlign={"center"}
-									mx="auto"
-									mb="48px"
-								>
-									Already have an account?{" "}
-									<Box
-										as="span"
-										textDecoration={"underline"}
-										color="#01C8FF"
-										cursor={"pointer"}
-									>
-										Sign in
-									</Box>{" "}
-								</Box>
-							</Form>
+				<Box pr={{ base: "10px", md: "29px" }}>
+					<form onSubmit={formik.handleSubmit}>
+						<VStack spacing="18px">
+							<FormControl>
+								<FormLabel>First name</FormLabel>
+								<Input
+									name="firstName"
+									size="lg"
+									placeholder="Jeremiah"
+									value={formik.values.firstName}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									// onChange={formik.handleChange}
+								/>
+								<FormErrorMessage>
+									{formik.touched.firstName &&
+										formik.errors.firstName}
+								</FormErrorMessage>
+							</FormControl>
+							<FormControl>
+								<FormLabel>Email Address</FormLabel>
+								<Input
+									name="email"
+									size="lg"
+									type="email"
+									value={formik.values.email}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									placeholder="Fame@gmail.com"
+								/>
+								<FormErrorMessage>
+									{formik.touched.email &&
+										formik.errors.email}
+								</FormErrorMessage>
+							</FormControl>
+							<FormControl>
+								<FormLabel>Phone Number</FormLabel>
+								<Input
+									name="phoneNumber"
+									size="lg"
+									placeholder="+2348103769079"
+									type="tel"
+									value={formik.values.phoneNumber}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									// pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+								/>
+								<FormErrorMessage>
+									{formik.touched.email &&
+										formik.errors.phoneNumber}
+								</FormErrorMessage>
+							</FormControl>
+							<FormControl>
+								<FormLabel>Password</FormLabel>
+								<InputGroup size="lg">
+									<Input
+										name="password"
+										value={formik.values.password}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										pr="4.5rem"
+										type={show ? "text" : "password"}
+										placeholder="Enter password"
+									/>
+									<InputRightElement width="4.5rem">
+										<Button
+											h="1.75rem"
+											size="xs"
+											onClick={handleClick}
+											borderRadius="none"
+											background="transparent"
+											_focus={{
+												border: "none",
+												background: "transparent",
+											}}
+											_hover={{
+												border: "none",
+												background: "transparent",
+											}}
+											_active={{
+												border: "none",
+												outline: "none",
+												background: "transparent",
+											}}
+										>
+											{show ? (
+												<BsEyeFill />
+											) : (
+												<BsEyeSlashFill />
+											)}
+										</Button>
+									</InputRightElement>
+								</InputGroup>
+								<FormErrorMessage>
+									{formik.touched.email &&
+										formik.errors.password}
+								</FormErrorMessage>
+							</FormControl>
+						</VStack>
+						<Checkbox
+							defaultChecked
+							// bg={"#9191DB"}
+							colorScheme={"purple"}
+							color="#A8D8D8"
+							mt="12px"
+							mb="34px"
+						>
+							Remember me
+						</Checkbox>
+						<Button
+							bg={"#01C8FF"}
+							p={"12px"}
+							borderRadius="10px"
+							width={{ base: "100%", md: "528px" }}
+							_focus={{
+								border: "none",
+								outline: "none",
+							}}
+							_hover={{
+								border: "none",
+								outline: "none",
+							}}
+							height="50px"
+							color="#4B4A4A"
+							mx="auto"
+							mb="20px"
+							display={"block"}
+							// isLoading={isSubmitting}
+							// disabled={formik.isSubmitting}
+							type="submit"
+						>
+							Sign up
+						</Button>
+						<Box as="p" textAlign={"center"} mx="auto" mb="48px">
+							Already have an account?{" "}
+							<Box
+								as="span"
+								textDecoration={"underline"}
+								color="#01C8FF"
+								cursor={"pointer"}
+							>
+								Sign in
+							</Box>{" "}
 						</Box>
-					)}
-				</Formik>
+					</form>
+				</Box>
 			</Box>
 		</AuthLayout>
 	);
