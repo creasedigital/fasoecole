@@ -10,18 +10,11 @@ import {
 	InputGroup,
 	InputRightElement,
 	Text,
+	useToast,
 	VStack,
 } from "@chakra-ui/react";
 import AuthLayout from "../../layout/AuthLayout";
-import {
-	useFormik,
-	Formik,
-	FormikHelpers,
-	FormikProps,
-	Form,
-	Field,
-	FieldProps,
-} from "formik";
+import { useFormik } from "formik";
 import SignUpValidationSchema from "../../utils/validator";
 import { useState } from "react";
 import { BsEyeSlashFill, BsEyeFill } from "react-icons/bs";
@@ -38,31 +31,17 @@ interface MyFormValues {
 const Signup = () => {
 	const navigate = useNavigate();
 
-	/* const [values, setValues] = useState({
-		firstName: "",
-		email: "",
-		phoneNumber: "",
-		password: "",
-	});
- */
 	const [show, setShow] = useState(false);
 	const handleClick = () => setShow(!show);
 
-	/* const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		e.persist();
-		setValues((values: any) => ({
-			...values,
-			[e.target.name]: e.target.value,
-		}));
-	}; */
+	const toast = useToast;
+
 	const createNewUser = async (data: MyFormValues, resetForm: Function) => {
 		try {
 			// API call integration will be here. Handle success / error response accordingly.
 			let result = await axios
 				.post("https://falconlite.com/v1/api/send-email", data)
 				.then((response) => {
-					console.log(response.status);
-					console.log(response.data);
 					return response;
 				});
 			if (data) {
@@ -78,7 +57,13 @@ const Signup = () => {
 				response?.data === "user already exist" &&
 				response?.status === 400
 			) {
-				// setFormStatus(formStatusProps.duplicate)
+				toast({
+					title: "user already exist.",
+					description: "try again",
+					status: "error",
+					duration: 6000,
+					isClosable: true,
+				});
 			} else {
 				// setFormStatus(formStatusProps.error)
 			}
@@ -96,10 +81,10 @@ const Signup = () => {
 		},
 		// validationSchema: SignUpValidationSchema,
 		onSubmit: function (values, actions) {
-			console.log({ values, actions });
+			// console.log({ values, actions });
 			createNewUser(values, actions.resetForm);
 			setTimeout(() => {
-				alert(JSON.stringify(values, null, 2));
+				// alert(JSON.stringify(values, null, 2));
 				actions.setSubmitting(false);
 			}, 1000);
 		},

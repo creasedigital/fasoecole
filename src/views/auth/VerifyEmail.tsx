@@ -21,17 +21,18 @@ import {
 import AuthLayout from "../../layout/AuthLayout";
 import { useState } from "react";
 import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
 	const [pinInputValue, setPinInputValue] = useState<string>("");
 
 	const handlePinInputChange = (value: string) => {
-		console.log(value);
 		setPinInputValue(value);
 	};
 
 	const toast = useToast();
+	const navigate = useNavigate();
 
 	const verifyNewUser = async (data: string, resetForm: Function) => {
 		try {
@@ -66,6 +67,17 @@ const VerifyEmail = () => {
 				response?.status === 400
 			) {
 				// setFormStatus(formStatusProps.duplicate)
+				toast({
+					title: "user already exist.",
+					description: "try again",
+					status: "error",
+					duration: 6000,
+					isClosable: true,
+				});
+
+				setTimeout(() => {
+					navigate("/");
+				}, 6000);
 			} else {
 				// setFormStatus(formStatusProps.error)
 			}
