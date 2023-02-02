@@ -80,7 +80,7 @@ const Signup = () => {
 		},
 		validationSchema: SignUpValidationSchema,
 		onSubmit: function (values, actions) {
-			console.log({ values, actions });
+			// console.log({ values, actions });
 			createNewUser(values, actions.resetForm);
 			setTimeout(() => {
 				// alert(JSON.stringify(values, null, 2));
