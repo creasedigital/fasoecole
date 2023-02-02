@@ -41,11 +41,9 @@ const Signup = () => {
 			// API call integration will be here. Handle success / error response accordingly.
 			let result = await axios
 				.post("https://falconlite.com/v1/api/send-email", data)
-				.then((response) => response.data);
+				.then((response) => response);
 
-			console.log(result);
-
-			if (result.data.status === 200) {
+			if (result.status === 200) {
 				// setFormStatus(formStatusProps.success)
 				// axios.post()
 
